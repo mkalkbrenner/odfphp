@@ -1,19 +1,15 @@
 <?php
 
-include_once __DIR__ . "/odf_type.php";
+namespace mkalkbrenner\odf\Shortcut;
 
 /**
  * Abstract class for Shortcuts.
- *
- * @author Philipp Hirsch <itself@hanspolo.net>
  * @license http://www.gnu.org/licenses/gpl.txt GNU Public License
- * @package ODF-PHP
- * @version 0.1
  */
-abstract class ODF_Shortcut
+abstract class Shortcut
 {
   private static $document;
-  
+
   /**
    *
    */
@@ -298,7 +294,7 @@ class ODF_Spreadsheet extends ODF_Shortcut
 
   /**
    * Creates a Table Element.
-   * 
+   *
    * @param Mixed $content
    * @param Array $attributes
    *
@@ -459,7 +455,7 @@ class ODF_Style extends ODF_Shortcut
 
   /**
    * Creates a ParagraphProperties Element.
-   * 
+   *
    * @param Mixed $content
    * @param Array $attributes
    *
