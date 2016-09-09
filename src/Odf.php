@@ -101,7 +101,7 @@ class Odf
   /**
    * Opens an empty file.
    *
-   * @param String $type
+   * @param string $type
    *
    * @throws \Exception
    */
@@ -127,7 +127,7 @@ class Odf
   /**
    * Saves the file to the disk.
    *
-   * @param String $path
+   * @param string $path
    *
    * @throws \Exception
    */
@@ -193,9 +193,9 @@ class Odf
   /**
    * Adds a Picture to the archive.
    *
-   * @param String $path
+   * @param string $path
    *
-   * @return String
+   * @return string
    *   The path that is used to access the image
    *
    * @throws \Exception

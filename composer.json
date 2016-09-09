@@ -1,0 +1,13 @@
+{
+    "name": "mkalkbrenner/odfphp",
+    "type": "library",
+    "description": "Simple PHP library to manipulate an ODF document.",
+    "keywords": ["odf"],
+    "homepage": "https://github.com/mkalkbrenner/odfphp",
+    "license": "GPL-3.0+",
+    "autoload":{
+        "psr-0":{
+            "mkalkbrenner/odf/": "src/"
+        }
+    }
+}

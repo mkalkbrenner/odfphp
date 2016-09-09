@@ -29,7 +29,7 @@ abstract class Shortcut
    *
    * @return \DOMNodeList
    */
-  public static function search($path, $relative = null) {
+  public static function search($path, $relative = NULL) {
     $xpath = new \DOMXPath(self::$document);
 
     return $relative != NULL ? $xpath->query($path, $relative) : $xpath->query($path);
