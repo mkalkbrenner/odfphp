@@ -2,6 +2,9 @@
 
 namespace mkalkbrenner\odf\Shortcut;
 
+use mkalkbrenner\odf\Attribute;
+use mkalkbrenner\odf\Node;
+
 /**
  * Shortcuts primarily for Text-documents.
  *
@@ -12,28 +15,40 @@ class Text extends Shortcut
   /**
    * Returns the Element /body/text.
    *
-   * @param DOMDocument $document
+   * @param \DOMDocument $document
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function getContentBody($document)
-  {
-    return $document->content->getElementsByTagName("body")->item(0)->getElementsByTagName("text")->item(0);
+  public static function getContentBody($document) {
+    return $document->content->getElementsByTagName('body')->item(0)->getElementsByTagName('text')->item(0);
   }
 
   /**
    * Creates a Headline Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createHeading($content = null, $attributes = array())
-  {
-    $allowed_attributes = array(ODF_Attribute::class_names, ODF_Attribute::cond_style_name, ODF_Attribute::text_id, ODF_Attribute::is_list_header, ODF_Attribute::outline_level, ODF_Attribute::restart_numbering, ODF_Attribute::start_value, ODF_Attribute::style_name, ODF_Attribute::about, ODF_Attribute::content, ODF_Attribute::datatype, ODF_Attribute::property, ODF_Attribute::id);
+  public static function createHeading($content = NULL, $attributes = []) {
+    static $allowed_attributes = [
+      Attribute::class_names,
+      Attribute::cond_style_name,
+      Attribute::text_id,
+      Attribute::is_list_header,
+      Attribute::outline_level,
+      Attribute::restart_numbering,
+      Attribute::start_value,
+      Attribute::style_name,
+      Attribute::about,
+      Attribute::content,
+      Attribute::datatype,
+      Attribute::property,
+      Attribute::id,
+    ];
 
-    $h = self::createElement(ODF_Node::h, $content);
+    $h = self::createElement(Node::h, $content);
     self::setAttributes($h, $attributes, $allowed_attributes);
 
     return $h;
@@ -42,16 +57,25 @@ class Text extends Shortcut
   /**
    * Creates a Paragraph Element
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createParagraph($content = null, $attributes = array())
-  {
-    $allowed_attributes = array(ODF_Attribute::class_names, ODF_Attribute::cond_style_name, ODF_Attribute::text_id, ODF_Attribute::style_name, ODF_Attribute::about, ODF_Attribute::content, ODF_Attribute::datatype, ODF_Attribute::property, ODF_Attribute::id);
+  public static function createParagraph($content = NULL, $attributes = []) {
+    static $allowed_attributes = [
+      Attribute::class_names,
+      Attribute::cond_style_name,
+      Attribute::text_id,
+      Attribute::style_name,
+      Attribute::about,
+      Attribute::content,
+      Attribute::datatype,
+      Attribute::property,
+      Attribute::id,
+    ];
 
-    $p = self::createElement(ODF_Node::p, $content);
+    $p = self::createElement(Node::p, $content);
     self::setAttributes($p, $attributes, $allowed_attributes);
 
     return $p;
@@ -60,16 +84,20 @@ class Text extends Shortcut
   /**
    * Creates a List Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createList($content = null, $attributes = array())
-  {
-    $allowed_attributes = array(ODF_Attribute::continue_list, ODF_Attribute::continue_numbering, ODF_Attribute::style_name, ODF_Attribute::id);
+  public static function createList($content = NULL, $attributes = []) {
+    static $allowed_attributes = [
+      Attribute::continue_list,
+      Attribute::continue_numbering,
+      Attribute::style_name,
+      Attribute::id,
+    ];
 
-    $list = self::createElement(ODF_Node::list_body, $content);
+    $list = self::createElement(Node::list_body, $content);
     self::setAttributes($list, $attributes, $allowed_attributes);
 
     return $list;
@@ -78,16 +106,17 @@ class Text extends Shortcut
   /**
    * Creates a List-Header Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createListHeader($content = null, $attributes = array())
-  {
-    $allowed_attributes = array(ODF_Attribute::id);
+  public static function createListHeader($content = NULL, $attributes = []) {
+    static $allowed_attributes = [
+      Attribute::id,
+    ];
 
-    $listheader = self::createElement(ODF_Node::list_header, $content);
+    $listheader = self::createElement(Node::list_header, $content);
 
     self::setAttributes($listheader, $attributes, $allowed_attributes);
 
@@ -97,19 +126,23 @@ class Text extends Shortcut
   /**
    * Creates a List-Item Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createListItem($content = null, $attributes = array())
-  {
-    $allowed_attributes = array(ODF_Attribute::start_value, ODF_Attribute::style_override, ODF_Attribute::id);
+  public static function createListItem($content = NULL, $attributes = []) {
+    static $allowed_attributes = [
+      Attribute::start_value,
+      Attribute::style_override,
+      Attribute::id,
+    ];
 
-    if (is_string($content))
+    if (is_string($content)) {
       $content = self::createParagraph($content, $attributes);
+    }
 
-    $listitem = self::createElement(ODF_Node::list_item, $content);
+    $listitem = self::createElement(Node::list_item, $content);
     self::setAttributes($listitem, $attributes, $allowed_attributes);
 
     return $listitem;
@@ -118,19 +151,26 @@ class Text extends Shortcut
   /**
    * Creates a Numbered-Paragraph Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createNumberedParagraph($content = null, $attributes = array())
-  {
-    $allowed_attributes = array(ODF_Attribute::continue_list, ODF_Attribute::text_level, ODF_Attribute::list_id, ODF_attribute::start_value, ODF_Attribute::style_name, ODF_Attribute::id);
+  public static function createNumberedParagraph($content = NULL, $attributes = []) {
+    static $allowed_attributes = [
+      Attribute::continue_list,
+      Attribute::text_level,
+      Attribute::list_id,
+      Attribute::start_value,
+      Attribute::style_name,
+      Attribute::id,
+    ];
 
-    if (is_string($content))
+    if (is_string($content)) {
       $content = self::createParagraph($content, $attributes);
+    }
 
-    $numberedp = self::createElement(ODF_Node::numbered_p, $content);
+    $numberedp = self::createElement(Node::numbered_p, $content);
     self::setAttributes($numberedp, $attributes, $allowed_attributes);
 
     return $numberedp;
@@ -139,17 +179,16 @@ class Text extends Shortcut
   /**
    * Creates a Page-Sequence Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createPageSequence($content = null, $attributes = array())
-  {
-    $allowed_attributes = array();
+  public static function createPageSequence($content = NULL, $attributes = []) {
+    static $allowed_attributes = [];
 
-    $pagesequence = self::createElement(ODF_Node::page_sequence, $content);
-    self::setAttributes($pagesequnce, $attributes, $allowed_attributes);
+    $pagesequence = self::createElement(Node::page_sequence, $content);
+    self::setAttributes($pagesequence, $attributes, $allowed_attributes);
 
     return $pagesequence;
   }
@@ -157,16 +196,17 @@ class Text extends Shortcut
   /**
    * Creates a Page Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createPage($content = null, $attributes = array())
-  {
-    $allowed_attributes = array(ODF_Attribute::master_page_name);
+  public static function createPage($content = NULL, $attributes = []) {
+    static $allowed_attributes = [
+      Attribute::master_page_name,
+    ];
 
-    $page = self::createElement(ODF_Node::page, $content);
+    $page = self::createElement(Node::page, $content);
     self::setAttributes($page, $attributes, $allowed_attributes);
 
     return $page;
@@ -175,18 +215,27 @@ class Text extends Shortcut
   /**
    * Creates a Section Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createSection($content = null, $attributes = array())
-  {
-    $allowed_attributes = array(ODF_Attribute::text_condition, ODF_Attribute::text_display, ODF_Attribute::text_name, ODF_Attribute::text_protected, ODF_Attribute::text_protection_key, ODF_Attribute::text_protection_key_digest_algorithm, ODF_Attribute::style_name, ODF_Attribute::id);
+  public static function createSection($content = NULL, $attributes = []) {
+    static $allowed_attributes = [
+      Attribute::text_condition,
+      Attribute::text_display,
+      Attribute::text_name,
+      Attribute::text_protected,
+      Attribute::text_protection_key,
+      Attribute::text_protection_key_digest_algorithm,
+      Attribute::style_name,
+      Attribute::id
+    ];
 
-    $section = selct::createElement(ODF_Node::section, $content);
+    $section = self::createElement(Node::section, $content);
     self::setAttributes($section, $attributes, $allowed_attributes);
 
     return $section;
   }
+
 }

@@ -2,6 +2,9 @@
 
 namespace mkalkbrenner\odf\Shortcut;
 
+use mkalkbrenner\odf\Attribute;
+use mkalkbrenner\odf\Node;
+
 /**
  * Shortcuts primarily for Draw-documents.
  *
@@ -9,35 +12,42 @@ namespace mkalkbrenner\odf\Shortcut;
  */
 class Draw extends Shortcut
 {
+
   /**
    * Returns the Element /body/spreadsheet.
    *
-   * @param DOMDocument $document
+   * @param \DOMDocument $document
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function getContentBody($document)
-  {
+  public static function getContentBody($document) {
     return $document->content->getElementsByTagName("body")->item(0)->getElementsByTagName("draw")->item(0);
   }
 
   /**
    * Creates a Frame Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createFrame($content = null, $attributes = array())
-  {
-    $allowed_attributes = array("draw:style-name", ODF_Attribute::image_height, ODF_Attribute::image_width, "text:anchor-type", "draw:z-index");
+  public static function createFrame($content = NULL, $attributes = []) {
+    static $allowed_attributes = [
+      'draw:style-name',
+      Attribute::image_height,
+      Attribute::image_width,
+      'text:anchor-type',
+      'draw:z-index',
+    ];
 
-    $attributes["draw:style-name"] = "fr1";
-    $attributes["text:anchor-type"] = "paragraph";
-    $attributes["draw:z-index"] = 0;
+    $attributes += [
+      'draw:style-name' => 'fr1',
+      'text:anchor-type' => 'paragraph',
+      'draw:z-index' => 0
+    ];
 
-    $frame = self::createElement(ODF_Node::frame, $content);
+    $frame = self::createElement(Node::frame, $content);
     self::setAttributes($frame, $attributes, $allowed_attributes);
 
     return $frame;
@@ -46,26 +56,31 @@ class Draw extends Shortcut
   /**
    * Creates a Image Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createImage($content = null, $attributes = array())
-  {
-    $allowed_attributes = array(ODF_Attribute::href, "xlink:type", "xlink:show", "xlink:actuate");
+  public static function createImage($content = NULL, $attributes = []) {
+    static $allowed_attributes = [
+      Attribute::href,
+      'xlink:type',
+      'xlink:show',
+      'xlink:actuate',
+    ];
 
-    $attributes["xlink:type"] = "simple";
-    $attributes["xlink:show"] = "embed";
-    $attributes["xlink:actuate"] = "onLoad";
+    $attributes += [
+      'xlink:type' => 'simple',
+      'xlink:show' => 'embed',
+      'xlink:actuate' => 'onLoad',
+    ];
 
-    if (is_string($content))
-      {
-	$attributes[ODF_Attribute::href] = $content;
-	$content = "";
-      }
+    if (is_string($content)) {
+      $attributes[Attribute::href] = $content;
+      $content = '';
+    }
 
-    $image = self::createElement(ODF_Node::image, $content);
+    $image = self::createElement(Node::image, $content);
     self::setAttributes($image, $attributes, $allowed_attributes);
 
     return $image;

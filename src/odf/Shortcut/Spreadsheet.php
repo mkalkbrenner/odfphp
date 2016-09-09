@@ -2,6 +2,7 @@
 
 namespace mkalkbrenner\odf\Shortcut;
 
+use mkalkbrenner\odf\Node;
 
 /**
  * Shortcuts primarily for Spreadsheet-documents.
@@ -10,32 +11,31 @@ namespace mkalkbrenner\odf\Shortcut;
  */
 class Spreadsheet extends Shortcut
 {
+
   /**
    * Returns the Element /body/spreadsheet.
    *
-   * @param DOMDocument $document
+   * @param \DOMDocument $document
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function getContentBody($document)
-  {
-    return $document->content->getElementsByTagName("body")->item(0)->getElementsByTagName("spreadsheet")->item(0);
+  public static function getContentBody($document) {
+    return $document->content->getElementsByTagName('body')->item(0)->getElementsByTagName('spreadsheet')->item(0);
   }
 
   /**
    * Creates a Table Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createTable($content = null, $attributes = array())
-  {
-    $allowed_attributes = array();
+  public static function createTable($content = NULL, $attributes = []) {
+    static $allowed_attributes = [];
 
-    $table = self::createElement(ODF_Node::table, $content);
-    self::setAttributes($row, $attributes, $allowed_attributes);
+    $table = self::createElement(Node::table, $content);
+    self::setAttributes($table, $attributes, $allowed_attributes);
 
     return $table;
   }
@@ -43,16 +43,15 @@ class Spreadsheet extends Shortcut
   /**
    * Creates a Table-Row Element.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createTableRow($content = null, $attributes = array())
-  {
-    $allowed_attributes = array();
+  public static function createTableRow($content = NULL, $attributes = []) {
+    static $allowed_attributes = [];
 
-    $row = self::createElement(ODF_Node::table_row, $content);
+    $row = self::createElement(Node::table_row, $content);
     self::setAttributes($row, $attributes, $allowed_attributes);
 
     return $row;
@@ -62,21 +61,22 @@ class Spreadsheet extends Shortcut
    * Create a Table-Cell Element.
    * If $content is a String, it creates a Paragrah containing this String.
    *
-   * @param Mixed $content
-   * @param Array $attributes
+   * @param mixed $content
+   * @param string[] $attributes
    *
-   * @return DOMElement
+   * @return \DOMElement
    */
-  public static function createTableCell($content = null, $attributes = array())
-  {
-    $allowed_attributes = array();
+  public static function createTableCell($content = NULL, $attributes = []) {
+    static $allowed_attributes = [];
 
-    if (is_string($content))
-      $content = ODF_Text::createParagraph($content, $attributes);
+    if (is_string($content)) {
+      $content = Text::createParagraph($content, $attributes);
+    }
 
-    $cell = self::createElement(ODF_Node::table_cell, $content);
+    $cell = self::createElement(Node::table_cell, $content);
     self::setAttributes($cell, $attributes, $allowed_attributes);
 
     return $cell;
   }
+
 }
