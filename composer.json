@@ -5,9 +5,10 @@
     "keywords": ["odf"],
     "homepage": "https://github.com/mkalkbrenner/odfphp",
     "license": "GPL-3.0+",
+    "require": {},
     "autoload":{
         "psr-0":{
-            "mkalkbrenner/odf/": "src/"
+            "mkalkbrenner\\odf": "src/"
         }
     }
 }
