@@ -217,6 +217,30 @@ class Odf
     $entry->setAttribute('manifest:media-type', mime_content_type($path));
     $this->meta_manifest->getElementsByTagName('manifest')->item(0)->appendChild($entry);
 
+    // Add image to content.xml
+    $textP = $this->content->createElement('text:p');
+    $textP->setAttribute('text:style-name', 'Standard');
+    $drawFrame = $this->content->createElement('draw:frame');
+    $drawFrame->setAttribute('draw:style-name', 'fr1');
+    $drawFrame->setAttribute('draw:name', 'Image1');
+    $drawFrame->setAttribute('text:anchor-type', 'paragraph');
+    $drawFrame->setAttribute('svg:x', '14.54cm');
+    $drawFrame->setAttribute('svg:y', '0.039cm');
+    $drawFrame->setAttribute('svg:width', '2.392cm');
+    $drawFrame->setAttribute('svg:height', '2.586cm');
+    $drawFrame->setAttribute('draw:z-index', '0');
+    $drawImage = $this->content->createElement('draw:image');
+    $drawImage->setAttribute('xlink:href', $dest);
+    $drawImage->setAttribute('xlink:type', 'simple');
+    $drawImage->setAttribute('xlink:show', 'embed');
+    $drawImage->setAttribute('xlink:actuate', 'onLoad');
+    $drawFrame->appendChild($drawImage);
+    $textP->appendChild($drawFrame);
+
+    $body = $this->content->getElementsByTagName('body')->item(0);
+    $text = $body->getElementsByTagName('text')->item(0);
+    $text->appendChild($textP);
+
     return $dest;
   }
 
