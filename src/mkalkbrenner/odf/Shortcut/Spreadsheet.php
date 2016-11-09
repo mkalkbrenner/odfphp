@@ -3,6 +3,7 @@
 namespace mkalkbrenner\odf\Shortcut;
 
 use mkalkbrenner\odf\Node;
+use mkalkbrenner\odf\Odf;
 
 /**
  * Shortcuts primarily for Spreadsheet-documents.
@@ -15,11 +16,11 @@ class Spreadsheet extends Shortcut
   /**
    * Returns the Element /body/spreadsheet.
    *
-   * @param \DOMDocument $document
+   * @param Odf $document
    *
    * @return \DOMElement
    */
-  public static function getContentBody($document) {
+  public static function getContentBody(Odf $document) {
     return $document->content->getElementsByTagName('body')->item(0)->getElementsByTagName('spreadsheet')->item(0);
   }
 

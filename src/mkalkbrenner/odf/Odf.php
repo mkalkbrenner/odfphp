@@ -3,6 +3,7 @@
 namespace mkalkbrenner\odf;
 
 use mkalkbrenner\odf\Shortcut\Draw;
+use mkalkbrenner\odf\Shortcut\Text;
 
 /**
  * Mainclass ODF.
@@ -306,27 +307,21 @@ class Odf
     $automaticStyle->appendChild($imageStyle);
 
     // Add image to content.xml
-    $drawFrame = $this->content->createElement('draw:frame');
-    $drawFrame->setAttribute('draw:style-name', 'myImageStyle');
-    $drawFrame->setAttribute('draw:name', 'Image1');
-    $drawFrame->setAttribute('text:anchor-type', 'page');
-    $drawFrame->setAttribute('text:anchor-page-number', '1');
-    $drawFrame->setAttribute('svg:x', '0.00cm');
-    $drawFrame->setAttribute('svg:y', '0.00cm');
-    $drawFrame->setAttribute('svg:width', '2.392cm');
-    $drawFrame->setAttribute('svg:height', '2.586cm');
-    $drawFrame->setAttribute('draw:z-index', '0');
-
     $drawImage = Draw::createImage(NULL, [ 'xlink:href' => $dest ]);
-    $drawFrame->appendChild($drawImage);
-
-    /** @var \DOMElement $body */
-    $body = $this->content->getElementsByTagName('body')->item(0);
+    $drawFrame = Draw::createFrame($drawImage,
+      [
+        'draw:style-name'   => 'myImageStyle',
+        'text:anchor-type'  => 'page',
+        'text:anchor-page-number' => '1',
+        Attribute::image_x => '18.608cm',
+        Attribute::image_y => '0.00cm',
+        Attribute::image_width => '2.392cm',
+        Attribute::image_height => '2.586cm',
+      ]
+    );
     /** @var \DOMElement $text */
-    $text = $body->getElementsByTagName('text')->item(0);
-    $firstChild = $text->firstChild;
-    //$text->appendChild($drawFrame);
-    $text->insertBefore($drawFrame, $firstChild);
+    $text = Text::getContentBody($this);
+    $text->insertBefore($drawFrame, $text->firstChild);
 
     $this->completeImageCountMetadata();
 

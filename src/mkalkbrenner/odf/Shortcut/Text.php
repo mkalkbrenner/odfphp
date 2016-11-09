@@ -4,6 +4,7 @@ namespace mkalkbrenner\odf\Shortcut;
 
 use mkalkbrenner\odf\Attribute;
 use mkalkbrenner\odf\Node;
+use mkalkbrenner\odf\Odf;
 
 /**
  * Shortcuts primarily for Text-documents.
@@ -15,11 +16,11 @@ class Text extends Shortcut
   /**
    * Returns the Element /body/text.
    *
-   * @param \DOMDocument $document
+   * @param Odf $document
    *
    * @return \DOMElement
    */
-  public static function getContentBody($document) {
+  public static function getContentBody(Odf $document) {
     return $document->content->getElementsByTagName('body')->item(0)->getElementsByTagName('text')->item(0);
   }
 
