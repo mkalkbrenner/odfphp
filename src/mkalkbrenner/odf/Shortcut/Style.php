@@ -3,6 +3,7 @@
 namespace mkalkbrenner\odf\Shortcut;
 
 use mkalkbrenner\odf\Node;
+use mkalkbrenner\odf\Odf;
 
 /**
  * Shortcuts primarily for Style-Elements.
@@ -11,6 +12,17 @@ use mkalkbrenner\odf\Node;
  */
 class Style extends Shortcut
 {
+
+  /**
+   * Returns the Element /automatic-styles
+   *
+   * @param Odf $odf
+   *
+   * @return \DOMElement
+   */
+  public static function getContentAutomaticStyles(Odf $odf) {
+    return $odf->content->getElementsByTagName('automatic-styles')->item(0);
+  }
 
   /**
    * Creates a Style Element.
@@ -212,6 +224,58 @@ class Style extends Shortcut
     ];
 
     $props = self::createElement(Node::text_properties, $content);
+    self::setAttributes($props, $attributes, $allowed_attributes);
+
+    return $props;
+  }
+
+  /**
+   * Creates a GraphicProperties Element
+   *
+   * @param null $content
+   * @param array $attributes
+   *
+   * @return \DOMElement
+   */
+  public static function createGraphicProperties($content = NULL, $attributes = [])
+  {
+    static $allowed_attributes = [
+      'style:vertical-pos',
+      'style:vertical-rel',
+      'style:horizontal-pos',
+      'style:horizontal-rel',
+      'style:mirror',
+      'fo:clip',
+      'draw:luminance',
+      'draw:contrast',
+      'draw:red',
+      'draw:green',
+      'draw:blue',
+      'draw:gamma',
+      'draw:color-inversion',
+      'draw:image-opacity',
+      'draw:color-mode',
+    ];
+
+    $attributes += [
+      'style:vertical-pos' => 'from-top',
+      'style:vertical-rel' => 'page',
+      'style:horizontal-pos' => 'from-left',
+      'style:horizontal-rel' => 'page',
+      'style:mirror' => 'none',
+      'fo:clip' => 'rect(0cm, 0cm, 0cm, 0cm)',
+      'draw:luminance' => '0%',
+      'draw:contrast' => '0%',
+      'draw:red' => '0%',
+      'draw:green' => '0%',
+      'draw:blue' => '0%',
+      'draw:gamma' => '100%',
+      'draw:color-inversion' => 'false',
+      'draw:image-opacity' => '100%',
+      'draw:color-mode' => 'standard'
+    ];
+
+    $props = self::createElement(Node::graphic_properties, $content);
     self::setAttributes($props, $attributes, $allowed_attributes);
 
     return $props;

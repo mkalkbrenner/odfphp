@@ -3,6 +3,7 @@
 namespace mkalkbrenner\odf;
 
 use mkalkbrenner\odf\Shortcut\Draw;
+use mkalkbrenner\odf\Shortcut\Style;
 use mkalkbrenner\odf\Shortcut\Text;
 
 /**
@@ -263,7 +264,7 @@ class Odf
    *
    * @throws \Exception
    */
-  public function addPicture($path) {
+  public function addPagePicture($path) {
     $dest = sprintf('Pictures/%s', basename($path));
 
     if (!file_exists($path)) {
@@ -280,30 +281,14 @@ class Odf
     $entry->setAttribute('manifest:media-type', mime_content_type($path));
     $this->meta_manifest->getElementsByTagName('manifest')->item(0)->appendChild($entry);
 
-    $automaticStyle = $this->content->getElementsByTagName('automatic-styles')->item(0);
-    $imageStyle = $this->content->createElement('style:style');
-    $imageStyle->setAttribute('style:name', 'myImageStyle');
-    $imageStyle->setAttribute('style:family', 'graphic');
+    $automaticStyle = Style::getContentAutomaticStyles($this);
+    $styleProperties = Style::createGraphicProperties();
+
+    $imageStyleAttributes = [ 'style:name' => 'myImageStyle', 'style:family' => 'graphic' ];
     if($this->hasGlobalGraphicsStyle()) {
-      $imageStyle->setAttribute('style:parent-style-name', 'Graphics');
+      $imageStyleAttributes['style:parent-style-name'] = 'Graphics';
     }
-    $styleProperties = $this->content->createElement('style:graphic-properties');
-    $styleProperties->setAttribute('style:vertical-pos', 'from-top');
-    $styleProperties->setAttribute('style:vertical-rel', 'page');
-    $styleProperties->setAttribute('style:horizontal-pos', 'from-left');
-    $styleProperties->setAttribute('style:horizontal-rel', 'page');
-    $styleProperties->setAttribute('style:mirror', 'none');
-    $styleProperties->setAttribute('fo:clip', "rect(0cm, 0cm, 0cm, 0cm)");
-    $styleProperties->setAttribute('draw:luminance', "0%");
-    $styleProperties->setAttribute('draw:contrast', "0%");
-    $styleProperties->setAttribute('draw:red', "0%");
-    $styleProperties->setAttribute('draw:green', "0%");
-    $styleProperties->setAttribute('draw:blue', "0%");
-    $styleProperties->setAttribute('draw:gamma', "100%");
-    $styleProperties->setAttribute('draw:color-inversion', "false");
-    $styleProperties->setAttribute('draw:image-opacity', "100%");
-    $styleProperties->setAttribute('draw:color-mode', "standard");
-    $imageStyle->appendChild($styleProperties);
+    $imageStyle = Style::createStyle($styleProperties, $imageStyleAttributes);
     $automaticStyle->appendChild($imageStyle);
 
     // Add image to content.xml
