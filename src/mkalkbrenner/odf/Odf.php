@@ -191,7 +191,7 @@ class Odf
   }
 
   /**
-   * Adds a Picture to the archive.
+   * Adds a Picture to the archive anchored by page.
    *
    * @param string $path
    *
@@ -201,6 +201,113 @@ class Odf
    * @throws \Exception
    */
   public function addPicture($path) {
+    $dest = sprintf('Pictures/%s', basename($path));
+
+    if (!file_exists($path)) {
+      throw new \Exception("File '$path' doesn't exist");
+    }
+
+    // Add image to Pictures/
+    $handle = fopen($path, 'r');
+    $this->others[$dest] = $this->read($handle);
+
+    // Add image to META-INF/manifest.xml
+    $entry = $this->meta_manifest->createElement('manifest:file-entry');
+    $entry->setAttribute('manifest:full-path', $dest);
+    $entry->setAttribute('manifest:media-type', mime_content_type($path));
+    $this->meta_manifest->getElementsByTagName('manifest')->item(0)->appendChild($entry);
+
+    // Adjust meta.xml
+    $metaImageCount = $this->meta->getElementsByTagName('meta')->item(0);
+    $metaDocumentStatistic = $metaImageCount->getElementsByTagName('document-statistic')->item(0);
+    $documentImageCount = (int)$metaDocumentStatistic->getAttribute('meta:image-count');
+    $metaDocumentStatistic->setAttribute('meta:image-count', $documentImageCount + 1);
+
+    // Add styles
+    $styles = $this->styles->getElementsByTagName('styles')->item(0);
+    $graphicsStyle = $this->styles->createElement('style:style');
+    $graphicsStyle->setAttribute('style:name', 'Graphics');
+    $graphicsStyle->setAttribute('style:family', 'graphic');
+    $graphicsProperties = $this->styles->createElement('style:graphic-properties');
+    $graphicsProperties->setAttribute('text:anchor-type', 'paragraph');
+    $graphicsProperties->setAttribute('svg:x', '0cm');
+    $graphicsProperties->setAttribute('svg:y', '0cm');
+    $graphicsProperties->setAttribute('style:wrap', 'dynamic');
+    $graphicsProperties->setAttribute('style:number-wrapped-paragraphs', 'no-limit');
+    $graphicsProperties->setAttribute('style:wrap-contour', 'false');
+    $graphicsProperties->setAttribute('style:vertical-pos', 'top');
+    $graphicsProperties->setAttribute('style:vertical-rel', 'paragraph');
+    $graphicsProperties->setAttribute('style:horizontal-pos', 'center');
+    $graphicsProperties->setAttribute('style:horizontal-rel', 'paragraph');
+    $graphicsStyle->appendChild($graphicsProperties);
+    $styles->appendChild($graphicsStyle);
+
+    $automaticStyle = $this->content->getElementsByTagName('automatic-styles')->item(0);
+    $imageStyle = $this->content->createElement('style:style');
+    $imageStyle->setAttribute('style:name', 'myImageStyle');
+    $imageStyle->setAttribute('style:family', 'graphic');
+    $imageStyle->setAttribute('style:parent-style-name', 'Graphics');
+    $styleProperties = $this->content->createElement('style:graphic-properties');
+    $styleProperties->setAttribute('style:vertical-pos', 'from-top');
+    $styleProperties->setAttribute('style:vertical-rel', 'page');
+    $styleProperties->setAttribute('style:horizontal-pos', 'from-left');
+    $styleProperties->setAttribute('style:horizontal-rel', 'page');
+    $styleProperties->setAttribute('style:mirror', 'none');
+    $styleProperties->setAttribute('fo:clip', "rect(0cm, 0cm, 0cm, 0cm)");
+    $styleProperties->setAttribute('draw:luminance', "0%");
+    $styleProperties->setAttribute('draw:contrast', "0%");
+    $styleProperties->setAttribute('draw:red', "0%");
+    $styleProperties->setAttribute('draw:green', "0%");
+    $styleProperties->setAttribute('draw:blue', "0%");
+    $styleProperties->setAttribute('draw:gamma', "100%");
+    $styleProperties->setAttribute('draw:color-inversion', "false");
+    $styleProperties->setAttribute('draw:image-opacity', "100%");
+    $styleProperties->setAttribute('draw:color-mode', "standard");
+    $imageStyle->appendChild($styleProperties);
+    $automaticStyle->appendChild($imageStyle);
+
+    // Add image to content.xml
+    $drawFrame = $this->content->createElement('draw:frame');
+    $drawFrame->setAttribute('draw:style-name', 'myImageStyle');
+    $drawFrame->setAttribute('draw:name', 'Image1');
+    $drawFrame->setAttribute('text:anchor-type', 'page');
+    $drawFrame->setAttribute('text:anchor-page-number', '1');
+    $drawFrame->setAttribute('svg:x', '16.371cm');
+    $drawFrame->setAttribute('svg:y', '2.79cm');
+    $drawFrame->setAttribute('svg:width', '2.392cm');
+    $drawFrame->setAttribute('svg:height', '2.586cm');
+    $drawFrame->setAttribute('draw:z-index', '0');
+
+    $drawImage = $this->content->createElement('draw:image');
+    $drawImage->setAttribute('xlink:href', $dest);
+    $drawImage->setAttribute('xlink:type', 'simple');
+    $drawImage->setAttribute('xlink:show', 'embed');
+    $drawImage->setAttribute('xlink:actuate', 'onLoad');
+    $drawFrame->appendChild($drawImage);
+
+    /** @var \DOMElement $body */
+    $body = $this->content->getElementsByTagName('body')->item(0);
+    /** @var \DOMElement $text */
+    $text = $body->getElementsByTagName('text')->item(0);
+    // It make sense on which position in xml the image inserted. we insert it on first position!
+    $firstChild = $text->firstChild;
+    //$text->appendChild($drawFrame);
+    $text->insertBefore($drawFrame, $firstChild);
+
+    return $dest;
+  }
+
+  /**
+   * Adds a Picture at end of document anchored by paragraph.
+   *
+   * @param string $path
+   *
+   * @return string
+   *   The path that is used to access the image
+   *
+   * @throws \Exception
+   */
+  public function addPictureParagraph($path) {
     $dest = sprintf('Pictures/%s', basename($path));
 
     if (!file_exists($path)) {
