@@ -2,6 +2,8 @@
 
 namespace mkalkbrenner\odf;
 
+use mkalkbrenner\odf\Shortcut\Draw;
+
 /**
  * Mainclass ODF.
  *
@@ -191,7 +193,67 @@ class Odf
   }
 
   /**
-   * Adds a Picture to the archive anchored by page.
+   * Inserts global 'Graphics' style into styles.xml if not exists
+   *
+   * @return bool
+   */
+  protected function hasGlobalGraphicsStyle() {
+    if($officeStyles = $this->styles->getElementsByTagName('styles')->item(0)) {
+      /** @var \DOMElement $styles */
+      $styles = $officeStyles->childNodes;
+      $found = false;
+      /** @var \DOMElement $style */
+      foreach($styles as $style) {
+        if($style->hasAttribute('style:name') && 'Graphics' == ($name = $style->getAttribute('style:name'))) {
+          $found = true;
+
+          break;
+        }
+      }
+
+      if(!$found) {
+        $graphicsStyle = $this->styles->createElement('style:style');
+        $graphicsStyle->setAttribute('style:name', 'Graphics');
+        $graphicsStyle->setAttribute('style:family', 'graphic');
+        $graphicsProperties = $this->styles->createElement('style:graphic-properties');
+        $graphicsProperties->setAttribute('text:anchor-type', 'paragraph');
+        $graphicsProperties->setAttribute('svg:x', '0cm');
+        $graphicsProperties->setAttribute('svg:y', '0cm');
+        $graphicsProperties->setAttribute('style:wrap', 'dynamic');
+        $graphicsProperties->setAttribute('style:number-wrapped-paragraphs', 'no-limit');
+        $graphicsProperties->setAttribute('style:wrap-contour', 'false');
+        $graphicsProperties->setAttribute('style:vertical-pos', 'top');
+        $graphicsProperties->setAttribute('style:vertical-rel', 'paragraph');
+        $graphicsProperties->setAttribute('style:horizontal-pos', 'center');
+        $graphicsProperties->setAttribute('style:horizontal-rel', 'paragraph');
+        $graphicsStyle->appendChild($graphicsProperties);
+        $officeStyles->appendChild($graphicsStyle);
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * completes the image count metadata
+   */
+  protected function completeImageCountMetadata() {
+    try {
+      /** @var \DOMElement $metaImageCount  */
+      $metaImageCount = $this->meta->getElementsByTagName('meta')->item(0);
+      /** @var \DOMElement $metaDocumentStatistic */
+      $metaDocumentStatistic = $metaImageCount->getElementsByTagName('document-statistic')->item(0);
+      $documentImageCount = (int)$metaDocumentStatistic->getAttribute('meta:image-count');
+      $metaDocumentStatistic->setAttribute('meta:image-count', $documentImageCount + 1);
+    } catch(\Exception $e) {
+      // it doesn't matter if throws exception, it works anyway without meta statistic
+    }
+  }
+
+  /**
+   * Adds a Picture to the archive.
    *
    * @param string $path
    *
@@ -217,36 +279,13 @@ class Odf
     $entry->setAttribute('manifest:media-type', mime_content_type($path));
     $this->meta_manifest->getElementsByTagName('manifest')->item(0)->appendChild($entry);
 
-    // Adjust meta.xml
-    $metaImageCount = $this->meta->getElementsByTagName('meta')->item(0);
-    $metaDocumentStatistic = $metaImageCount->getElementsByTagName('document-statistic')->item(0);
-    $documentImageCount = (int)$metaDocumentStatistic->getAttribute('meta:image-count');
-    $metaDocumentStatistic->setAttribute('meta:image-count', $documentImageCount + 1);
-
-    // Add styles
-    $styles = $this->styles->getElementsByTagName('styles')->item(0);
-    $graphicsStyle = $this->styles->createElement('style:style');
-    $graphicsStyle->setAttribute('style:name', 'Graphics');
-    $graphicsStyle->setAttribute('style:family', 'graphic');
-    $graphicsProperties = $this->styles->createElement('style:graphic-properties');
-    $graphicsProperties->setAttribute('text:anchor-type', 'paragraph');
-    $graphicsProperties->setAttribute('svg:x', '0cm');
-    $graphicsProperties->setAttribute('svg:y', '0cm');
-    $graphicsProperties->setAttribute('style:wrap', 'dynamic');
-    $graphicsProperties->setAttribute('style:number-wrapped-paragraphs', 'no-limit');
-    $graphicsProperties->setAttribute('style:wrap-contour', 'false');
-    $graphicsProperties->setAttribute('style:vertical-pos', 'top');
-    $graphicsProperties->setAttribute('style:vertical-rel', 'paragraph');
-    $graphicsProperties->setAttribute('style:horizontal-pos', 'center');
-    $graphicsProperties->setAttribute('style:horizontal-rel', 'paragraph');
-    $graphicsStyle->appendChild($graphicsProperties);
-    $styles->appendChild($graphicsStyle);
-
     $automaticStyle = $this->content->getElementsByTagName('automatic-styles')->item(0);
     $imageStyle = $this->content->createElement('style:style');
     $imageStyle->setAttribute('style:name', 'myImageStyle');
     $imageStyle->setAttribute('style:family', 'graphic');
-    $imageStyle->setAttribute('style:parent-style-name', 'Graphics');
+    if($this->hasGlobalGraphicsStyle()) {
+      $imageStyle->setAttribute('style:parent-style-name', 'Graphics');
+    }
     $styleProperties = $this->content->createElement('style:graphic-properties');
     $styleProperties->setAttribute('style:vertical-pos', 'from-top');
     $styleProperties->setAttribute('style:vertical-rel', 'page');
@@ -272,27 +311,24 @@ class Odf
     $drawFrame->setAttribute('draw:name', 'Image1');
     $drawFrame->setAttribute('text:anchor-type', 'page');
     $drawFrame->setAttribute('text:anchor-page-number', '1');
-    $drawFrame->setAttribute('svg:x', '16.371cm');
-    $drawFrame->setAttribute('svg:y', '2.79cm');
+    $drawFrame->setAttribute('svg:x', '0.00cm');
+    $drawFrame->setAttribute('svg:y', '0.00cm');
     $drawFrame->setAttribute('svg:width', '2.392cm');
     $drawFrame->setAttribute('svg:height', '2.586cm');
     $drawFrame->setAttribute('draw:z-index', '0');
 
-    $drawImage = $this->content->createElement('draw:image');
-    $drawImage->setAttribute('xlink:href', $dest);
-    $drawImage->setAttribute('xlink:type', 'simple');
-    $drawImage->setAttribute('xlink:show', 'embed');
-    $drawImage->setAttribute('xlink:actuate', 'onLoad');
+    $drawImage = Draw::createImage(NULL, [ 'xlink:href' => $dest ]);
     $drawFrame->appendChild($drawImage);
 
     /** @var \DOMElement $body */
     $body = $this->content->getElementsByTagName('body')->item(0);
     /** @var \DOMElement $text */
     $text = $body->getElementsByTagName('text')->item(0);
-    // It make sense on which position in xml the image inserted. we insert it on first position!
     $firstChild = $text->firstChild;
     //$text->appendChild($drawFrame);
     $text->insertBefore($drawFrame, $firstChild);
+
+    $this->completeImageCountMetadata();
 
     return $dest;
   }
