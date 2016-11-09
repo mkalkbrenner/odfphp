@@ -1,9 +1,9 @@
 {
-    "name": "mkalkbrenner/odfphp",
+    "name": "akaservus/odfphp",
     "type": "library",
     "description": "Simple PHP library to manipulate an ODF document.",
     "keywords": ["odf"],
-    "homepage": "https://github.com/mkalkbrenner/odfphp",
+    "homepage": "https://github.com/akaservus/odfphp",
     "license": "GPL-3.0+",
     "require": {},
     "autoload":{
