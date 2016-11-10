@@ -211,6 +211,29 @@ class Odf
   }
 
   /**
+   * Checks global Graphics style exists and inserts it if not exists
+   *
+   * @return bool
+   */
+  public function hasGlobalGraphicsStyle() {
+    if($officeStyles = Style::getStyleStyles($this)) {
+      if(Style::getChildByName($officeStyles, 'Graphics')) {
+        return true;
+      }
+
+      Style::setDocument($this->styles);
+
+      $graphicsProperties = Style::createGlobalGraphicProperties();
+      $graphicsStyle = Style::createStyle($graphicsProperties, [ 'style:name' => 'Graphics', 'style:family' => 'graphic' ]);
+      $officeStyles->appendChild($graphicsStyle);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Adds a Picture to the page. All floats in cm.
    *
    * @param string $path
@@ -225,7 +248,7 @@ class Odf
    *
    * @throws \Exception
    */
-  public function addPagePicture($path, $width = 0.0, $height = 0.0, $x = 0.0, $y = 0.0, $page = 1) {
+  public function addPagePicture($path, $width = 1.0, $height = 1.0, $x = 0.0, $y = 0.0, $page = 1) {
     $dest = sprintf('Pictures/%s', basename($path));
 
     if (!file_exists($path)) {
@@ -246,9 +269,11 @@ class Odf
     $automaticStyle = Style::getContentAutomaticStyles($this);
     $styleProperties = Style::createGraphicProperties();
     $imageStyleAttributes = [ 'style:name' => 'myImageStyle', 'style:family' => 'graphic' ];
-    if(Style::hasGlobalGraphicsStyle($this)) {
+    if($this->hasGlobalGraphicsStyle()) {
       $imageStyleAttributes['style:parent-style-name'] = 'Graphics';
     }
+
+    Style::setDocument($this->content);
     $imageStyle = Style::createStyle($styleProperties, $imageStyleAttributes);
     Style::appendChild($automaticStyle, $imageStyle);
 

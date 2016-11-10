@@ -64,6 +64,27 @@ abstract class Shortcut
   }
 
   /**
+   * Returns child element by name
+   *
+   * @param \DOMElement $parent
+   * @param string $name
+   *
+   * @return \DOMElement|null
+   */
+  public static function getChildByName(\DOMElement $parent, $name) {
+    /** @var \DOMElement $children */
+    $children = $parent->childNodes;
+    /** @var \DOMElement $child */
+    foreach($children as $child) {
+      if($child->hasAttribute('style:name') && $name == $child->getAttribute('style:name')) {
+        return $child;
+      }
+    }
+
+    return null;
+  }
+
+  /**
    * Creates a new Element.
    *
    * @param string $title
