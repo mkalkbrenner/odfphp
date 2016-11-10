@@ -281,4 +281,50 @@ class Style extends Shortcut
     return $props;
   }
 
+  /**
+   * Checks global Graphics style exists and inserts it if not exists
+   *
+   * @param Odf $odf
+   *
+   * @return bool
+   */
+  public static function hasGlobalGraphicsStyle(Odf $odf) {
+    if($officeStyles = $odf->styles->getElementsByTagName('styles')->item(0)) {
+      /** @var \DOMElement $styles */
+      $styles = $officeStyles->childNodes;
+      $found = false;
+      /** @var \DOMElement $style */
+      foreach($styles as $style) {
+        if($style->hasAttribute('style:name') && 'Graphics' == ($name = $style->getAttribute('style:name'))) {
+          $found = true;
+
+          break;
+        }
+      }
+
+      if(!$found) {
+        $graphicsStyle = $odf->styles->createElement('style:style');
+        $graphicsStyle->setAttribute('style:name', 'Graphics');
+        $graphicsStyle->setAttribute('style:family', 'graphic');
+        $graphicsProperties = $odf->styles->createElement('style:graphic-properties');
+        $graphicsProperties->setAttribute('text:anchor-type', 'paragraph');
+        $graphicsProperties->setAttribute('svg:x', '0cm');
+        $graphicsProperties->setAttribute('svg:y', '0cm');
+        $graphicsProperties->setAttribute('style:wrap', 'dynamic');
+        $graphicsProperties->setAttribute('style:number-wrapped-paragraphs', 'no-limit');
+        $graphicsProperties->setAttribute('style:wrap-contour', 'false');
+        $graphicsProperties->setAttribute('style:vertical-pos', 'top');
+        $graphicsProperties->setAttribute('style:vertical-rel', 'paragraph');
+        $graphicsProperties->setAttribute('style:horizontal-pos', 'center');
+        $graphicsProperties->setAttribute('style:horizontal-rel', 'paragraph');
+        $graphicsStyle->appendChild($graphicsProperties);
+        $officeStyles->appendChild($graphicsStyle);
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
 }

@@ -195,50 +195,6 @@ class Odf
   }
 
   /**
-   * Inserts global 'Graphics' style into styles.xml if not exists
-   *
-   * @return bool
-   */
-  protected function hasGlobalGraphicsStyle() {
-    if($officeStyles = $this->styles->getElementsByTagName('styles')->item(0)) {
-      /** @var \DOMElement $styles */
-      $styles = $officeStyles->childNodes;
-      $found = false;
-      /** @var \DOMElement $style */
-      foreach($styles as $style) {
-        if($style->hasAttribute('style:name') && 'Graphics' == ($name = $style->getAttribute('style:name'))) {
-          $found = true;
-
-          break;
-        }
-      }
-
-      if(!$found) {
-        $graphicsStyle = $this->styles->createElement('style:style');
-        $graphicsStyle->setAttribute('style:name', 'Graphics');
-        $graphicsStyle->setAttribute('style:family', 'graphic');
-        $graphicsProperties = $this->styles->createElement('style:graphic-properties');
-        $graphicsProperties->setAttribute('text:anchor-type', 'paragraph');
-        $graphicsProperties->setAttribute('svg:x', '0cm');
-        $graphicsProperties->setAttribute('svg:y', '0cm');
-        $graphicsProperties->setAttribute('style:wrap', 'dynamic');
-        $graphicsProperties->setAttribute('style:number-wrapped-paragraphs', 'no-limit');
-        $graphicsProperties->setAttribute('style:wrap-contour', 'false');
-        $graphicsProperties->setAttribute('style:vertical-pos', 'top');
-        $graphicsProperties->setAttribute('style:vertical-rel', 'paragraph');
-        $graphicsProperties->setAttribute('style:horizontal-pos', 'center');
-        $graphicsProperties->setAttribute('style:horizontal-rel', 'paragraph');
-        $graphicsStyle->appendChild($graphicsProperties);
-        $officeStyles->appendChild($graphicsStyle);
-      }
-
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
    * completes the image count metadata
    */
   protected function completeImageCountMetadata() {
@@ -255,16 +211,21 @@ class Odf
   }
 
   /**
-   * Adds a Picture to the archive.
+   * Adds a Picture to the page. All floats in cm.
    *
    * @param string $path
+   * @param float $width
+   * @param float $height
+   * @param float $x
+   * @param float $y
+   * @param int $page
    *
    * @return string
-   *   The path that is used to access the image
+   *    The path that is used to access the image
    *
    * @throws \Exception
    */
-  public function addPagePicture($path) {
+  public function addPagePicture($path, $width = 0.0, $height = 0.0, $x = 0.0, $y = 0.0, $page = 1) {
     $dest = sprintf('Pictures/%s', basename($path));
 
     if (!file_exists($path)) {
@@ -281,15 +242,15 @@ class Odf
     $entry->setAttribute('manifest:media-type', mime_content_type($path));
     $this->meta_manifest->getElementsByTagName('manifest')->item(0)->appendChild($entry);
 
+    // Add image style to automatic styles in content.xml
     $automaticStyle = Style::getContentAutomaticStyles($this);
     $styleProperties = Style::createGraphicProperties();
-
     $imageStyleAttributes = [ 'style:name' => 'myImageStyle', 'style:family' => 'graphic' ];
-    if($this->hasGlobalGraphicsStyle()) {
+    if(Style::hasGlobalGraphicsStyle($this)) {
       $imageStyleAttributes['style:parent-style-name'] = 'Graphics';
     }
     $imageStyle = Style::createStyle($styleProperties, $imageStyleAttributes);
-    $automaticStyle->appendChild($imageStyle);
+    Style::appendChild($automaticStyle, $imageStyle);
 
     // Add image to content.xml
     $drawImage = Draw::createImage(NULL, [ 'xlink:href' => $dest ]);
@@ -297,16 +258,14 @@ class Odf
       [
         'draw:style-name'   => 'myImageStyle',
         'text:anchor-type'  => 'page',
-        'text:anchor-page-number' => '1',
-        Attribute::image_x => '18.608cm',
-        Attribute::image_y => '0.00cm',
-        Attribute::image_width => '2.392cm',
-        Attribute::image_height => '2.586cm',
+        'text:anchor-page-number' => $page,
+        Attribute::image_x => $x . 'cm',
+        Attribute::image_y => $y . 'cm',
+        Attribute::image_width => $width . 'cm',
+        Attribute::image_height => $height . 'cm',
       ]
     );
-    /** @var \DOMElement $text */
-    $text = Text::getContentBody($this);
-    $text->insertBefore($drawFrame, $text->firstChild);
+    Text::prependChild(Text::getContentBody($this), $drawFrame);
 
     $this->completeImageCountMetadata();
 
@@ -323,7 +282,7 @@ class Odf
    *
    * @throws \Exception
    */
-  public function addPictureParagraph($path) {
+  public function addParagraphPicture($path) {
     $dest = sprintf('Pictures/%s', basename($path));
 
     if (!file_exists($path)) {

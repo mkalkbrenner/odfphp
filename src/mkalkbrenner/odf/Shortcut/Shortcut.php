@@ -36,6 +36,34 @@ abstract class Shortcut
   }
 
   /**
+   * Inserts a child element at last position in parent
+   *
+   * @param \DOMElement $parent
+   * @param \DOMElement $child
+   *
+   * @return \DOMElement
+   */
+  public static function appendChild(\DOMElement $parent, \DOMElement $child) {
+    $parent->appendChild($child);
+
+    return $parent;
+  }
+
+  /**
+   * Inserts a child element at first position in parent
+   *
+   * @param \DOMElement $parent
+   * @param \DOMElement $child
+   *
+   * @return \DOMElement
+   */
+  public static function prependChild(\DOMElement $parent, \DOMElement $child) {
+    $parent->insertBefore($child, $parent->firstChild);
+
+    return $parent;
+  }
+
+  /**
    * Creates a new Element.
    *
    * @param string $title
