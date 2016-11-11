@@ -248,8 +248,9 @@ class Odf
    *
    * @throws \Exception
    */
-  public function addPagePicture($path, $width = 1.0, $height = 1.0, $x = 0.0, $y = 0.0, $page = 1) {
+  public function addPicture($path, $width = 1.0, $height = 1.0, $x = 0.0, $y = 0.0, $page = 1) {
     $dest = sprintf('Pictures/%s', basename($path));
+    $styleName = sprintf('imageStyle%s', md5(rand()));
 
     if (!file_exists($path)) {
       throw new \Exception("File '$path' doesn't exist");
@@ -268,7 +269,7 @@ class Odf
     // Add image style to automatic styles in content.xml
     $automaticStyle = Style::getContentAutomaticStyles($this);
     $styleProperties = Style::createGraphicProperties();
-    $imageStyleAttributes = [ 'style:name' => 'myImageStyle', 'style:family' => 'graphic' ];
+    $imageStyleAttributes = [ 'style:name' => $styleName, 'style:family' => 'graphic' ];
     if($this->hasGlobalGraphicsStyle()) {
       $imageStyleAttributes['style:parent-style-name'] = 'Graphics';
     }
@@ -281,7 +282,7 @@ class Odf
     $drawImage = Draw::createImage(NULL, [ 'xlink:href' => $dest ]);
     $drawFrame = Draw::createFrame($drawImage,
       [
-        'draw:style-name'   => 'myImageStyle',
+        'draw:style-name'   => $styleName,
         'text:anchor-type'  => 'page',
         'text:anchor-page-number' => $page,
         Attribute::image_x => $x . 'cm',
@@ -293,60 +294,6 @@ class Odf
     Text::prependChild(Text::getContentBody($this), $drawFrame);
 
     $this->completeImageCountMetadata();
-
-    return $dest;
-  }
-
-  /**
-   * Adds a Picture at end of document anchored by paragraph.
-   *
-   * @param string $path
-   *
-   * @return string
-   *   The path that is used to access the image
-   *
-   * @throws \Exception
-   */
-  public function addParagraphPicture($path) {
-    $dest = sprintf('Pictures/%s', basename($path));
-
-    if (!file_exists($path)) {
-      throw new \Exception("File '$path' doesn't exist");
-    }
-
-    // Add image to Pictures/
-    $handle = fopen($path, 'r');
-    $this->others[$dest] = $this->read($handle);
-
-    // Add image to META-INF/manifest.xml
-    $entry = $this->meta_manifest->createElement('manifest:file-entry');
-    $entry->setAttribute('manifest:full-path', $dest);
-    $entry->setAttribute('manifest:media-type', mime_content_type($path));
-    $this->meta_manifest->getElementsByTagName('manifest')->item(0)->appendChild($entry);
-
-    // Add image to content.xml
-    $textP = $this->content->createElement('text:p');
-    $textP->setAttribute('text:style-name', 'Standard');
-    $drawFrame = $this->content->createElement('draw:frame');
-    $drawFrame->setAttribute('draw:style-name', 'fr1');
-    $drawFrame->setAttribute('draw:name', 'Image1');
-    $drawFrame->setAttribute('text:anchor-type', 'paragraph');
-    $drawFrame->setAttribute('svg:x', '14.54cm');
-    $drawFrame->setAttribute('svg:y', '0.039cm');
-    $drawFrame->setAttribute('svg:width', '2.392cm');
-    $drawFrame->setAttribute('svg:height', '2.586cm');
-    $drawFrame->setAttribute('draw:z-index', '0');
-    $drawImage = $this->content->createElement('draw:image');
-    $drawImage->setAttribute('xlink:href', $dest);
-    $drawImage->setAttribute('xlink:type', 'simple');
-    $drawImage->setAttribute('xlink:show', 'embed');
-    $drawImage->setAttribute('xlink:actuate', 'onLoad');
-    $drawFrame->appendChild($drawImage);
-    $textP->appendChild($drawFrame);
-
-    $body = $this->content->getElementsByTagName('body')->item(0);
-    $text = $body->getElementsByTagName('text')->item(0);
-    $text->appendChild($textP);
 
     return $dest;
   }

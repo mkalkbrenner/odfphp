@@ -26,7 +26,7 @@ class Style extends Shortcut
 
 
   /**
-   * Returns the Element /automatic-styles
+   * Returns the Element /automatic-styles from content.xml
    *
    * @param Odf $odf
    *
@@ -34,6 +34,17 @@ class Style extends Shortcut
    */
   public static function getContentAutomaticStyles(Odf $odf) {
     return $odf->content->getElementsByTagName('automatic-styles')->item(0);
+  }
+
+  /**
+   * Returns the Element /automatic-styles from styles.xml
+   *
+   * @param Odf $odf
+   *
+   * @return \DOMElement
+   */
+  public static function getStylesAutomaticStyles(Odf $odf) {
+    return $odf->styles->getElementsByTagName('automatic-styles')->item(0);
   }
 
   /**
@@ -298,6 +309,8 @@ class Style extends Shortcut
       'style:horizontal-pos',
       'style:horizontal-rel',
       'style:mirror',
+      'style:wrap',
+      'style:run-through', // => background
       'fo:clip',
       'draw:luminance',
       'draw:contrast',
@@ -316,6 +329,7 @@ class Style extends Shortcut
       'style:horizontal-pos' => 'from-left',
       'style:horizontal-rel' => 'page',
       'style:mirror' => 'none',
+      'style:wrap' => 'run-through',
       'fo:clip' => 'rect(0cm, 0cm, 0cm, 0cm)',
       'draw:luminance' => '0%',
       'draw:contrast' => '0%',
