@@ -15,14 +15,12 @@ class Draw extends Shortcut
 {
 
   /**
-   * Returns the Element /body/spreadsheet.
-   *
-   * @param Odf $odf
+   * Returns the Element /body.
    *
    * @return \DOMElement
    */
-  public static function getContentBody(Odf $odf) {
-    return $odf->content->getElementsByTagName('body')->item(0)->getElementsByTagName('draw')->item(0);
+  public static function getContentBody() {
+    return self::$document->getElementsByTagName('body')->item(0);
   }
 
   /**

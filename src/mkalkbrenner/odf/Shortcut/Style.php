@@ -16,35 +16,46 @@ class Style extends Shortcut
   /**
    * Returns the Element /styles of styles.xml
    *
-   * @param Odf $odf
-   *
    * @return \DOMElement
    */
-  public static function getStyleStyles(Odf $odf) {
-    return $odf->styles->getElementsByTagName('styles')->item(0);
+  public static function getDocumentStyles() {
+    return self::$document->getElementsByTagName('styles')->item(0);
   }
 
 
   /**
-   * Returns the Element /automatic-styles from content.xml
-   *
-   * @param Odf $odf
+   * Returns the Element /automatic-styles
    *
    * @return \DOMElement
    */
-  public static function getContentAutomaticStyles(Odf $odf) {
-    return $odf->content->getElementsByTagName('automatic-styles')->item(0);
+  public static function getDocumentAutomaticStyles() {
+    return self::$document->getElementsByTagName('automatic-styles')->item(0);
   }
 
   /**
-   * Returns the Element /automatic-styles from styles.xml
+   * Returns the Element /master-styles/master-page from styles.xml. There is always.
    *
-   * @param Odf $odf
+   * @return mixed
+   */
+  public static function getDocumentMasterPage() {
+    return self::$document->getElementsByTagName('master-styles')->item(0)->getElementsByTagName('master-page')->item(0);
+  }
+
+  /**
+   * Creates a master header element
+   *
+   * @param mixed $content
+   * @param array $attributes
    *
    * @return \DOMElement
    */
-  public static function getStylesAutomaticStyles(Odf $odf) {
-    return $odf->styles->getElementsByTagName('automatic-styles')->item(0);
+  public static function createMasterStyleHeader($content = NULL, $attributes = []) {
+    static $allowed_attributes = [];
+
+    $style = self::createElement(Node::style_header, $content);
+    self::setAttributes($style, $attributes, $allowed_attributes);
+
+    return $style;
   }
 
   /**
@@ -311,6 +322,7 @@ class Style extends Shortcut
       'style:mirror',
       'style:wrap',
       'style:run-through', // => background
+      'style:number-wrapped-paragraphs',
       'fo:clip',
       'draw:luminance',
       'draw:contrast',
@@ -330,6 +342,7 @@ class Style extends Shortcut
       'style:horizontal-rel' => 'page',
       'style:mirror' => 'none',
       'style:wrap' => 'run-through',
+      'style:number-wrapped-paragraphs' => 'no-limit',
       'fo:clip' => 'rect(0cm, 0cm, 0cm, 0cm)',
       'draw:luminance' => '0%',
       'draw:contrast' => '0%',

@@ -195,62 +195,16 @@ class Odf
   }
 
   /**
-   * completes the image count metadata
-   */
-  protected function completeImageCountMetadata() {
-    try {
-      /** @var \DOMElement $metaImageCount  */
-      $metaImageCount = $this->meta->getElementsByTagName('meta')->item(0);
-      /** @var \DOMElement $metaDocumentStatistic */
-      $metaDocumentStatistic = $metaImageCount->getElementsByTagName('document-statistic')->item(0);
-      $documentImageCount = (int)$metaDocumentStatistic->getAttribute('meta:image-count');
-      $metaDocumentStatistic->setAttribute('meta:image-count', $documentImageCount + 1);
-    } catch(\Exception $e) {
-      // it doesn't matter if throws exception, it works anyway without meta statistic
-    }
-  }
-
-  /**
-   * Checks global Graphics style exists and inserts it if not exists
-   *
-   * @return bool
-   */
-  public function hasGlobalGraphicsStyle() {
-    if($officeStyles = Style::getStyleStyles($this)) {
-      if(Style::getChildByName($officeStyles, 'Graphics')) {
-        return true;
-      }
-
-      Style::setDocument($this->styles);
-
-      $graphicsProperties = Style::createGlobalGraphicProperties();
-      $graphicsStyle = Style::createStyle($graphicsProperties, [ 'style:name' => 'Graphics', 'style:family' => 'graphic' ]);
-      $officeStyles->appendChild($graphicsStyle);
-
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Adds a Picture to the page. All floats in cm.
+   * Adds image to odt archive on filesystem
    *
    * @param string $path
-   * @param float $width
-   * @param float $height
-   * @param float $x
-   * @param float $y
-   * @param int $page
    *
    * @return string
-   *    The path that is used to access the image
    *
    * @throws \Exception
    */
-  public function addPicture($path, $width = 1.0, $height = 1.0, $x = 0.0, $y = 0.0, $page = 1) {
+  protected function addPictureToArchive($path) {
     $dest = sprintf('Pictures/%s', basename($path));
-    $styleName = sprintf('imageStyle%s', md5(rand()));
 
     if (!file_exists($path)) {
       throw new \Exception("File '$path' doesn't exist");
@@ -266,34 +220,89 @@ class Odf
     $entry->setAttribute('manifest:media-type', mime_content_type($path));
     $this->meta_manifest->getElementsByTagName('manifest')->item(0)->appendChild($entry);
 
-    // Add image style to automatic styles in content.xml
-    $automaticStyle = Style::getContentAutomaticStyles($this);
-    $styleProperties = Style::createGraphicProperties();
-    $imageStyleAttributes = [ 'style:name' => $styleName, 'style:family' => 'graphic' ];
-    if($this->hasGlobalGraphicsStyle()) {
-      $imageStyleAttributes['style:parent-style-name'] = 'Graphics';
-    }
+    /** @var \DOMElement $metaImageCount  */
+    $metaImageCount = $this->meta->getElementsByTagName('meta')->item(0);
+    /** @var \DOMElement $metaDocumentStatistic */
+    $metaDocumentStatistic = $metaImageCount->getElementsByTagName('document-statistic')->item(0);
+    $documentImageCount = (int)$metaDocumentStatistic->getAttribute('meta:image-count');
+    $metaDocumentStatistic->setAttribute('meta:image-count', $documentImageCount + 1);
 
-    Style::setDocument($this->content);
-    $imageStyle = Style::createStyle($styleProperties, $imageStyleAttributes);
+    return $dest;
+  }
+
+  /**
+   * Adds a Picture to the odf. All floats in cm.
+   *
+   * @param string $path
+   * @param array $attributes
+   *
+   * @return string
+   *    The path that is used to access the image
+   */
+  public function addPicture($path, array $attributes = []) {
+    $attributes += [
+      'width' => 1.0,
+      'height' => 1.0,
+      'x' => 0.0,
+      'y' => 0.0,
+      'page' => 0,
+      'wrap' => 'run-through',
+      'background' => false
+    ];
+    $dest = $this->addPictureToArchive($path);
+    $styleName = sprintf('imageStyle%s', md5(rand()));
+
+    // Add image style to automatic styles in document
+    if($attributes['page'] > 0) {
+      $document = $this->content;
+      $properties = [];
+    } else {
+      $document = $this->styles;
+      $properties = [
+        'style:vertical-rel'      => 'paragraph',
+        'style:horizontal-rel'    => 'paragraph',
+      ];
+    }
+    $properties['style:run-through'] = $attributes['background']?'background':'foreground';
+    $properties['style:wrap'] = $attributes['wrap'];
+
+    Style::setDocument($document);
+    $automaticStyle = Style::getDocumentAutomaticStyles();
+    $styleProperties = Style::createGraphicProperties(NULL, $properties);
+    $imageStyle = Style::createStyle($styleProperties,
+      [
+        'style:name'    => $styleName,
+        'style:family'  => 'graphic'
+      ]
+    );
     Style::appendChild($automaticStyle, $imageStyle);
 
-    // Add image to content.xml
+    // Add image to document
     $drawImage = Draw::createImage(NULL, [ 'xlink:href' => $dest ]);
     $drawFrame = Draw::createFrame($drawImage,
       [
-        'draw:style-name'   => $styleName,
-        'text:anchor-type'  => 'page',
-        'text:anchor-page-number' => $page,
-        Attribute::image_x => $x . 'cm',
-        Attribute::image_y => $y . 'cm',
-        Attribute::image_width => $width . 'cm',
-        Attribute::image_height => $height . 'cm',
+        'draw:style-name'         => $styleName,
+        'text:anchor-type'        => $attributes['page'] > 0?'page':'paragraph',
+        'text:anchor-page-number' => $attributes['page'] > 0?$attributes['page']:null,
+        Attribute::image_x        => $attributes['x'] . 'cm',
+        Attribute::image_y        => $attributes['y'] . 'cm',
+        Attribute::image_width    => $attributes['width'] . 'cm',
+        Attribute::image_height   => $attributes['height'] . 'cm',
       ]
     );
-    Text::prependChild(Text::getContentBody($this), $drawFrame);
-
-    $this->completeImageCountMetadata();
+    if($attributes['page'] > 0) {
+      Text::prependChild(Text::getContentBody($this), $drawFrame);
+    } else {
+      /** @var \DOMElement $masterPage */
+      $masterPage = Style::getDocumentMasterPage();
+      $styleHeader = Style::search(Node::style_header, $masterPage);
+      if($styleHeader && $styleHeader->length) {
+        Style::prependChild($styleHeader->item(0), Text::createParagraph($drawFrame));
+      } else {
+        Text::setDocument($this->styles);
+        Style::prependChild($masterPage, Style::createMasterStyleHeader(Text::createParagraph($drawFrame)));
+      }
+    }
 
     return $dest;
   }

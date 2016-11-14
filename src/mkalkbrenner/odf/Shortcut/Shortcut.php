@@ -12,7 +12,7 @@ abstract class Shortcut
   /**
    * @var \DOMDocument
    */
-  private static $document;
+  protected static $document;
 
   /**
    *
