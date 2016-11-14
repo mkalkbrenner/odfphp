@@ -320,8 +320,8 @@ class Style extends Shortcut
       'style:horizontal-pos',
       'style:horizontal-rel',
       'style:mirror',
-      'style:wrap',
-      'style:run-through', // => background
+      'style:wrap',                         // none|left|right|parallel|dynamic|run-through
+      'style:run-through',                  // foreground|background
       'style:number-wrapped-paragraphs',
       'fo:clip',
       'draw:luminance',
