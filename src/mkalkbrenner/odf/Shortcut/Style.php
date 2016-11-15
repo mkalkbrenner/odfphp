@@ -341,7 +341,6 @@ class Style extends Shortcut
       'style:horizontal-pos' => 'from-left',
       'style:horizontal-rel' => 'page',
       'style:mirror' => 'none',
-      'style:wrap' => 'run-through',
       'style:number-wrapped-paragraphs' => 'no-limit',
       'fo:clip' => 'rect(0cm, 0cm, 0cm, 0cm)',
       'draw:luminance' => '0%',

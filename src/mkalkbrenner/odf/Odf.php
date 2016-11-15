@@ -195,29 +195,36 @@ class Odf
   }
 
   /**
-   * Adds image to odt archive on filesystem
+   * Adds image to odt archive
    *
    * @param string $path
    *
    * @return string
    *
    * @throws \Exception
+   *    The path that is used to access the image
    */
-  public function addPictureToArchive($path) {
+  public function addPicture($path) {
     $dest = sprintf('Pictures/%s', basename($path));
 
-    if (!file_exists($path)) {
+    // Add image to Pictures/
+    if($handle = fopen($path, 'r')) {
+      $this->others[$dest] = $this->read($handle);
+    } else {
       throw new \Exception("File '$path' doesn't exist");
     }
-
-    // Add image to Pictures/
-    $handle = fopen($path, 'r');
-    $this->others[$dest] = $this->read($handle);
 
     // Add image to META-INF/manifest.xml
     $entry = $this->meta_manifest->createElement('manifest:file-entry');
     $entry->setAttribute('manifest:full-path', $dest);
-    $entry->setAttribute('manifest:media-type', mime_content_type($path));
+
+    if(preg_match('@^https?://@is', $path, $result)) {
+      $mime = get_headers($path, 1)["Content-Type"];
+    } else {
+      $mime = mime_content_type($path);
+    }
+
+    $entry->setAttribute('manifest:media-type', $mime);
     $this->meta_manifest->getElementsByTagName('manifest')->item(0)->appendChild($entry);
 
     /** @var \DOMElement $metaImageCount  */
@@ -231,15 +238,36 @@ class Odf
   }
 
   /**
-   * Adds a Picture to the odf. All floats in cm.
+   * Adds a Picture to the document. All floats in cm.
    *
    * @param string $path
+   *    Path to the file
    * @param array $attributes
+   *    Possible attributes: width, height, x, y, wrap (odf values), background (true|false)
    *
    * @return string
    *    The path that is used to access the image
    */
-  public function addPicture($path, array $attributes = []) {
+  public function addDocumentPicture($path, array $attributes = []) {
+    // We first check if the file exists and add file to archive
+    $dest = $this->addPicture($path);
+    $styleName = sprintf('imageStyle%s', md5(rand()));
+
+    // If one of the values or both are not set, then these are calculated
+    if(!isset($attributes['width']) || !isset($attributes['height'])) {
+      list($origWidth, $origHeight) = getimagesize($path);
+      if(isset($attributes['width']) && !isset($attributes['height'])) {
+        $attributes['height'] = $origHeight * $attributes['width'] / $origWidth;
+      } else if(isset($attributes['height']) && !isset($attributes['width'])) {
+        $attributes['width'] = $origWidth * $attributes['height'] / $origHeight;
+      } else {
+        $multiplier = 2.54/72;
+        $attributes['width'] = $multiplier * $origWidth;
+        $attributes['height'] = $multiplier * $origHeight;
+      }
+    }
+
+    // Set default attributes
     $attributes += [
       'width' => 1.0,
       'height' => 1.0,
@@ -249,22 +277,14 @@ class Odf
       'wrap' => 'run-through',
       'background' => false
     ];
-    $dest = $this->addPictureToArchive($path);
-    $styleName = sprintf('imageStyle%s', md5(rand()));
 
     // Add image style to automatic styles in document
     if($attributes['page'] > 0) {
       $document = $this->content;
-      $properties = [];
     } else {
       $document = $this->styles;
-      $properties = [
-        'style:vertical-rel'      => 'paragraph',
-        'style:horizontal-rel'    => 'paragraph',
-      ];
     }
-    $properties['style:run-through'] = $attributes['background']?'background':'foreground';
-    $properties['style:wrap'] = $attributes['wrap'];
+    $properties = [ 'style:wrap' => $attributes['wrap'], 'style:run-through' => ($attributes['background']?'background':'foreground') ];
 
     Style::setDocument($document);
     $automaticStyle = Style::getDocumentAutomaticStyles();
@@ -303,8 +323,6 @@ class Odf
         Style::prependChild($masterPage, Style::createMasterStyleHeader(Text::createParagraph($drawFrame)));
       }
     }
-
-    return $dest;
   }
 
 }
