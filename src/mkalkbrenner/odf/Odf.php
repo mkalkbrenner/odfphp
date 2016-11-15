@@ -250,7 +250,7 @@ class Odf
     $dest = $this->addPicture($path);
     $styleName = sprintf('imageStyle%s', md5(rand()));
 
-    // If one of the values or both are not set, then these are calculated
+    // If one of the values (width|height) or both are not set, then these are calculated
     if(!isset($attributes['width']) || !isset($attributes['height'])) {
       list($origWidth, $origHeight) = getimagesize($path);
       if(isset($attributes['width']) && !isset($attributes['height'])) {
@@ -264,15 +264,13 @@ class Odf
       }
     }
 
-    // Set default attributes
+    // Set other default attributes
     $attributes += [
-      'width' => 1.0,
-      'height' => 1.0,
-      'x' => 0.0,
-      'y' => 0.0,
-      'page' => 0,
-      'wrap' => 'run-through',
-      'background' => false
+      'x'           => 0.0,
+      'y'           => 0.0,
+      'page'        => 0,
+      'wrap'        => 'run-through',
+      'background'  => false
     ];
 
     // Add image style to automatic styles in document
@@ -316,7 +314,7 @@ class Odf
       if($styleHeader && $styleHeader->length) {
         Style::prependChild($styleHeader->item(0), Text::createParagraph($drawFrame));
       } else {
-        Text::setDocument($this->styles);
+        Style::setDocument($this->styles);
         Style::prependChild($masterPage, Style::createMasterStyleHeader(Text::createParagraph($drawFrame)));
       }
     }

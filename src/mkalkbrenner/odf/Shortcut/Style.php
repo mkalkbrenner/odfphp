@@ -285,16 +285,16 @@ class Style extends Shortcut
     ];
 
     $attributes += [
-      'text:anchor-type' => 'paragraph',
-      'svg:x' => '0cm',
-      'svg:y' => '0cm',
-      'style:wrap' => 'dynamic',
+      'text:anchor-type'                => 'paragraph',
+      'svg:x'                           => '0cm',
+      'svg:y'                           => '0cm',
+      'style:wrap'                      => 'dynamic',
       'style:number-wrapped-paragraphs' => 'no-limit',
-      'style:wrap-contour' => 'false',
-      'style:vertical-pos' => 'top',
-      'style:vertical-rel' => 'paragraph',
-      'style:horizontal-pos' => 'center',
-      'style:horizontal-rel' => 'paragraph'
+      'style:wrap-contour'              => 'false',
+      'style:vertical-pos'              => 'top',
+      'style:vertical-rel'              => 'paragraph',
+      'style:horizontal-pos'            => 'center',
+      'style:horizontal-rel'            => 'paragraph'
     ];
 
     $props = self::createElement(Node::graphic_properties, $content);
@@ -335,22 +335,22 @@ class Style extends Shortcut
     ];
 
     $attributes += [
-      'style:vertical-pos' => 'from-top',
-      'style:vertical-rel' => 'page',
-      'style:horizontal-pos' => 'from-left',
-      'style:horizontal-rel' => 'page',
-      'style:mirror' => 'none',
+      'style:vertical-pos'              => 'from-top',
+      'style:vertical-rel'              => 'page',
+      'style:horizontal-pos'            => 'from-left',
+      'style:horizontal-rel'            => 'page',
+      'style:mirror'                    => 'none',
       'style:number-wrapped-paragraphs' => 'no-limit',
-      'fo:clip' => 'rect(0cm, 0cm, 0cm, 0cm)',
-      'draw:luminance' => '0%',
-      'draw:contrast' => '0%',
-      'draw:red' => '0%',
-      'draw:green' => '0%',
-      'draw:blue' => '0%',
-      'draw:gamma' => '100%',
-      'draw:color-inversion' => 'false',
-      'draw:image-opacity' => '100%',
-      'draw:color-mode' => 'standard'
+      'fo:clip'                         => 'rect(0cm, 0cm, 0cm, 0cm)',
+      'draw:luminance'                  => '0%',
+      'draw:contrast'                   => '0%',
+      'draw:red'                        => '0%',
+      'draw:green'                      => '0%',
+      'draw:blue'                       => '0%',
+      'draw:gamma'                      => '100%',
+      'draw:color-inversion'            => 'false',
+      'draw:image-opacity'              => '100%',
+      'draw:color-mode'                 => 'standard'
     ];
 
     $props = self::createElement(Node::graphic_properties, $content);
