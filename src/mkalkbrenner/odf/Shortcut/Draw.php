@@ -4,7 +4,6 @@ namespace mkalkbrenner\odf\Shortcut;
 
 use mkalkbrenner\odf\Attribute;
 use mkalkbrenner\odf\Node;
-use mkalkbrenner\odf\Odf;
 
 /**
  * Shortcuts primarily for Draw-documents.

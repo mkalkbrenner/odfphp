@@ -195,7 +195,7 @@ class Odf
   }
 
   /**
-   * Adds image to odt archive
+   * Adds a Picture to the archive.
    *
    * @param string $path
    *

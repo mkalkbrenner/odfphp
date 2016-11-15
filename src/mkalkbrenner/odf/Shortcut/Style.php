@@ -3,7 +3,6 @@
 namespace mkalkbrenner\odf\Shortcut;
 
 use mkalkbrenner\odf\Node;
-use mkalkbrenner\odf\Odf;
 
 /**
  * Shortcuts primarily for Style-Elements.
