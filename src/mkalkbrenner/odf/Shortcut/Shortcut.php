@@ -12,7 +12,7 @@ abstract class Shortcut
   /**
    * @var \DOMDocument
    */
-  private static $document;
+  protected static $document;
 
   /**
    *
@@ -33,6 +33,55 @@ abstract class Shortcut
     $xpath = new \DOMXPath(self::$document);
 
     return $relative != NULL ? $xpath->query($path, $relative) : $xpath->query($path);
+  }
+
+  /**
+   * Inserts a child element at last position in parent
+   *
+   * @param \DOMElement $parent
+   * @param \DOMElement $child
+   *
+   * @return \DOMElement
+   */
+  public static function appendChild(\DOMElement $parent, \DOMElement $child) {
+    $parent->appendChild($child);
+
+    return $parent;
+  }
+
+  /**
+   * Inserts a child element at first position in parent
+   *
+   * @param \DOMElement $parent
+   * @param \DOMElement $child
+   *
+   * @return \DOMElement
+   */
+  public static function prependChild(\DOMElement $parent, \DOMElement $child) {
+    $parent->insertBefore($child, $parent->firstChild);
+
+    return $parent;
+  }
+
+  /**
+   * Returns child element by name
+   *
+   * @param \DOMElement $parent
+   * @param string $name
+   *
+   * @return \DOMElement|null
+   */
+  public static function getChildByName(\DOMElement $parent, $name) {
+    /** @var \DOMElement $children */
+    $children = $parent->childNodes;
+    /** @var \DOMElement $child */
+    foreach($children as $child) {
+      if($child->hasAttribute('style:name') && $name == $child->getAttribute('style:name')) {
+        return $child;
+      }
+    }
+
+    return null;
   }
 
   /**

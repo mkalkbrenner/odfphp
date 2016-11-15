@@ -14,14 +14,12 @@ class Draw extends Shortcut
 {
 
   /**
-   * Returns the Element /body/spreadsheet.
-   *
-   * @param \DOMDocument $document
+   * Returns the Element /body.
    *
    * @return \DOMElement
    */
-  public static function getContentBody($document) {
-    return $document->content->getElementsByTagName("body")->item(0)->getElementsByTagName("draw")->item(0);
+  public static function getContentBody() {
+    return self::$document->getElementsByTagName('body')->item(0);
   }
 
   /**
@@ -37,7 +35,10 @@ class Draw extends Shortcut
       'draw:style-name',
       Attribute::image_height,
       Attribute::image_width,
+      Attribute::image_x,
+      Attribute::image_y,
       'text:anchor-type',
+      'text:anchor-page-number',
       'draw:z-index',
     ];
 

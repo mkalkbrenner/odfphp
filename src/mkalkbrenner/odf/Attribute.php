@@ -13,8 +13,10 @@ interface Attribute
 
   const href = "xlink:href";
 
-  const image_width = "svg:width";
-  const image_height = "svg:height";
+  const image_width   = "svg:width";
+  const image_height  = "svg:height";
+  const image_x       = "svg:x";
+  const image_y       = "svg:y";
 
   const id = "xml:id";
 

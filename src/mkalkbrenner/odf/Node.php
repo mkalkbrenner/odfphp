@@ -32,6 +32,8 @@ interface Node
   const image = "draw:image";
 
   const style = "style:style";
+  const style_header = "style:header";
   const paragraph_properties = "style:paragraph-properties";
   const text_properties = "style:text-properties";
+  const graphic_properties = 'style:graphic-properties';
 }

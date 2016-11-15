@@ -15,12 +15,10 @@ class Spreadsheet extends Shortcut
   /**
    * Returns the Element /body/spreadsheet.
    *
-   * @param \DOMDocument $document
-   *
    * @return \DOMElement
    */
-  public static function getContentBody($document) {
-    return $document->content->getElementsByTagName('body')->item(0)->getElementsByTagName('spreadsheet')->item(0);
+  public static function getContentBody() {
+    return self::$document->getElementsByTagName('body')->item(0)->getElementsByTagName('spreadsheet')->item(0);
   }
 
   /**
