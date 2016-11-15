@@ -200,9 +200,9 @@ class Odf
    * @param string $path
    *
    * @return string
+   *    The path that is used to access the image
    *
    * @throws \Exception
-   *    The path that is used to access the image
    */
   public function addPicture($path) {
     $dest = sprintf('Pictures/%s', basename($path));
