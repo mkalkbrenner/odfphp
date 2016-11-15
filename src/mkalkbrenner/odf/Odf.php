@@ -244,9 +244,6 @@ class Odf
    *    Path to the file
    * @param array $attributes
    *    Possible attributes: width, height, x, y, wrap (odf values), background (true|false)
-   *
-   * @return string
-   *    The path that is used to access the image
    */
   public function addDocumentPicture($path, array $attributes = []) {
     // We first check if the file exists and add file to archive
