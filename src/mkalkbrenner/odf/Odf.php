@@ -203,7 +203,7 @@ class Odf
    *
    * @throws \Exception
    */
-  protected function addPictureToArchive($path) {
+  public function addPictureToArchive($path) {
     $dest = sprintf('Pictures/%s', basename($path));
 
     if (!file_exists($path)) {
