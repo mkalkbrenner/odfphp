@@ -33,6 +33,7 @@ interface Node
 
   const style = "style:style";
   const style_header = "style:header";
+  const style_first_header = "style:header-first";
   const paragraph_properties = "style:paragraph-properties";
   const text_properties = "style:text-properties";
   const graphic_properties = 'style:graphic-properties';

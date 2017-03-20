@@ -317,6 +317,12 @@ class Odf
         Style::setDocument($this->styles);
         Style::prependChild($masterPage, Style::createMasterStyleHeader(Text::createParagraph($drawFrame)));
       }
+      // Add header image for the first page
+      $styleFirstHeader = Style::search(Node::style_first_header, $masterPage);
+      if($styleFirstHeader && $styleFirstHeader->length) {
+        $firstHeaderDrawFrame = $drawFrame->cloneNode(true);
+        Style::prependChild($styleFirstHeader->item(0), Text::createParagraph($firstHeaderDrawFrame));
+      }
     }
   }
 
