@@ -6,7 +6,7 @@
     "homepage": "https://github.com/mkalkbrenner/odfphp",
     "license": "GPL-3.0+",
     "require": {
-        "maennchen/zipstream-php": "0.4.*"
+        "ext-zip": "*"
     },
     "autoload":{
         "psr-0":{
