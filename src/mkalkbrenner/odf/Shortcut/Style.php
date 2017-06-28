@@ -329,7 +329,6 @@ class Style extends Shortcut
       'fo:margin-right',
       'fo:margin-bottom',
       'fo:padding',
-      'fo:border',
       'draw:luminance',
       'draw:contrast',
       'draw:red',
