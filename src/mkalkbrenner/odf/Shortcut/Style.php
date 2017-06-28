@@ -323,6 +323,12 @@ class Style extends Shortcut
       'style:run-through',                  // foreground|background
       'style:number-wrapped-paragraphs',
       'fo:clip',
+      'fo:margin-left',
+      'fo:margin-top',
+      'fo:margin-right',
+      'fo:margin-bottom',
+      'fo:padding',
+      'fo:border',
       'draw:luminance',
       'draw:contrast',
       'draw:red',
