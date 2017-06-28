@@ -323,6 +323,7 @@ class Style extends Shortcut
       'style:run-through',                  // foreground|background
       'style:number-wrapped-paragraphs',
       'fo:clip',
+      'fo:border',
       'fo:margin-left',
       'fo:margin-top',
       'fo:margin-right',
@@ -348,6 +349,7 @@ class Style extends Shortcut
       'style:mirror'                    => 'none',
       'style:number-wrapped-paragraphs' => 'no-limit',
       'fo:clip'                         => 'rect(0cm, 0cm, 0cm, 0cm)',
+      'fo:border'                       => 'none',
       'draw:luminance'                  => '0%',
       'draw:contrast'                   => '0%',
       'draw:red'                        => '0%',
