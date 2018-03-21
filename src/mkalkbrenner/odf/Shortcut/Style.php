@@ -174,8 +174,11 @@ class Style extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
   public static function createTextProperties($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
