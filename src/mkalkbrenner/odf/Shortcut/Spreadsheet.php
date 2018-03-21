@@ -26,13 +26,16 @@ class Spreadsheet extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createTable($content = NULL, $attributes = []) {
+  public static function createTable($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [];
 
-    $table = self::createElement(Node::table, $content);
+    $table = self::createElement(Node::table, $content, false, $namespace);
     self::setAttributes($table, $attributes, $allowed_attributes);
 
     return $table;
@@ -43,13 +46,16 @@ class Spreadsheet extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createTableRow($content = NULL, $attributes = []) {
+  public static function createTableRow($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [];
 
-    $row = self::createElement(Node::table_row, $content);
+    $row = self::createElement(Node::table_row, $content, false, $namespace);
     self::setAttributes($row, $attributes, $allowed_attributes);
 
     return $row;
@@ -61,17 +67,20 @@ class Spreadsheet extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createTableCell($content = NULL, $attributes = []) {
+  public static function createTableCell($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [];
 
     if (is_string($content)) {
       $content = Text::createParagraph($content, $attributes);
     }
 
-    $cell = self::createElement(Node::table_cell, $content);
+    $cell = self::createElement(Node::table_cell, $content, false, $namespace);
     self::setAttributes($cell, $attributes, $allowed_attributes);
 
     return $cell;
