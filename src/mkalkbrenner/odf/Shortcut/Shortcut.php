@@ -90,25 +90,26 @@ abstract class Shortcut
    * @param string $title
    * @param mixed $content
    * @param boolean $isleaf
+   * @param string|null $namespace
    *
    * @return \DOMElement
    *
    * @throws \Exception
    */
-  protected static function createElement($title, $content, $isleaf = FALSE) {
+  protected static function createElement($title, $content, $isleaf = FALSE, $namespace = null) {
     $element = NULL;
 
-    if (is_null($content)) {
-      $element = self::$document->createElement($title);
+    $args = [$namespace, $title, (is_string($content)?$content:null)];
+
+    if (!is_null($namespace)) {
+      $element = self::$document->createElementNS($args[0], $args[1], $args[2]);
+    } else {
+      $element = self::$document->createElement($args[1], $args[2]);
     }
-    else if (is_string($content)) {
-      $element = self::$document->createElement($title, $content);
-    }
-    else if (!$isleaf && $content instanceof \DOMNode) {
-      $element = self::$document->createElement($title);
+
+    if (!$isleaf && is_null($args[2]) && $content instanceof \DOMNode) {
       $element->appendChild($content);
-    }
-    else {
+    } else if (!is_null($content)) {
       throw new \Exception('Content has to be a String' . ($isleaf ? '' : ' or a DOMNode'));
     }
 

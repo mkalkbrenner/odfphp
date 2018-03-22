@@ -27,10 +27,13 @@ class Draw extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createFrame($content = NULL, $attributes = []) {
+  public static function createFrame($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       'draw:style-name',
       Attribute::image_height,
@@ -48,7 +51,7 @@ class Draw extends Shortcut
       'draw:z-index' => 0
     ];
 
-    $frame = self::createElement(Node::frame, $content);
+    $frame = self::createElement(Node::frame, $content, false, $namespace);
     self::setAttributes($frame, $attributes, $allowed_attributes);
 
     return $frame;
@@ -59,10 +62,13 @@ class Draw extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createImage($content = NULL, $attributes = []) {
+  public static function createImage($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       Attribute::href,
       'xlink:type',
@@ -81,7 +87,7 @@ class Draw extends Shortcut
       $content = '';
     }
 
-    $image = self::createElement(Node::image, $content);
+    $image = self::createElement(Node::image, $content, false, $namespace);
     self::setAttributes($image, $attributes, $allowed_attributes);
 
     return $image;

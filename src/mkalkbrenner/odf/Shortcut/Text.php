@@ -26,10 +26,13 @@ class Text extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createHeading($content = NULL, $attributes = []) {
+  public static function createHeading($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       Attribute::class_names,
       Attribute::cond_style_name,
@@ -46,7 +49,7 @@ class Text extends Shortcut
       Attribute::id,
     ];
 
-    $h = self::createElement(Node::h, $content);
+    $h = self::createElement(Node::h, $content, false, $namespace);
     self::setAttributes($h, $attributes, $allowed_attributes);
 
     return $h;
@@ -57,10 +60,13 @@ class Text extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createParagraph($content = NULL, $attributes = []) {
+  public static function createParagraph($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       Attribute::class_names,
       Attribute::cond_style_name,
@@ -73,7 +79,7 @@ class Text extends Shortcut
       Attribute::id,
     ];
 
-    $p = self::createElement(Node::p, $content);
+    $p = self::createElement(Node::p, $content, false, $namespace);
     self::setAttributes($p, $attributes, $allowed_attributes);
 
     return $p;
@@ -84,10 +90,13 @@ class Text extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createList($content = NULL, $attributes = []) {
+  public static function createList($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       Attribute::continue_list,
       Attribute::continue_numbering,
@@ -95,7 +104,7 @@ class Text extends Shortcut
       Attribute::id,
     ];
 
-    $list = self::createElement(Node::list_body, $content);
+    $list = self::createElement(Node::list_body, $content, false, $namespace);
     self::setAttributes($list, $attributes, $allowed_attributes);
 
     return $list;
@@ -106,15 +115,18 @@ class Text extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createListHeader($content = NULL, $attributes = []) {
+  public static function createListHeader($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       Attribute::id,
     ];
 
-    $listheader = self::createElement(Node::list_header, $content);
+    $listheader = self::createElement(Node::list_header, $content, false, $namespace);
 
     self::setAttributes($listheader, $attributes, $allowed_attributes);
 
@@ -126,10 +138,13 @@ class Text extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createListItem($content = NULL, $attributes = []) {
+  public static function createListItem($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       Attribute::start_value,
       Attribute::style_override,
@@ -140,7 +155,7 @@ class Text extends Shortcut
       $content = self::createParagraph($content, $attributes);
     }
 
-    $listitem = self::createElement(Node::list_item, $content);
+    $listitem = self::createElement(Node::list_item, $content, false, $namespace);
     self::setAttributes($listitem, $attributes, $allowed_attributes);
 
     return $listitem;
@@ -151,10 +166,13 @@ class Text extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createNumberedParagraph($content = NULL, $attributes = []) {
+  public static function createNumberedParagraph($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       Attribute::continue_list,
       Attribute::text_level,
@@ -168,7 +186,7 @@ class Text extends Shortcut
       $content = self::createParagraph($content, $attributes);
     }
 
-    $numberedp = self::createElement(Node::numbered_p, $content);
+    $numberedp = self::createElement(Node::numbered_p, $content, false, $namespace);
     self::setAttributes($numberedp, $attributes, $allowed_attributes);
 
     return $numberedp;
@@ -179,13 +197,16 @@ class Text extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createPageSequence($content = NULL, $attributes = []) {
+  public static function createPageSequence($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [];
 
-    $pagesequence = self::createElement(Node::page_sequence, $content);
+    $pagesequence = self::createElement(Node::page_sequence, $content, false, $namespace);
     self::setAttributes($pagesequence, $attributes, $allowed_attributes);
 
     return $pagesequence;
@@ -196,15 +217,18 @@ class Text extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createPage($content = NULL, $attributes = []) {
+  public static function createPage($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       Attribute::master_page_name,
     ];
 
-    $page = self::createElement(Node::page, $content);
+    $page = self::createElement(Node::page, $content, false, $namespace);
     self::setAttributes($page, $attributes, $allowed_attributes);
 
     return $page;
@@ -215,10 +239,13 @@ class Text extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createSection($content = NULL, $attributes = []) {
+  public static function createSection($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       Attribute::text_condition,
       Attribute::text_display,
@@ -230,7 +257,7 @@ class Text extends Shortcut
       Attribute::id
     ];
 
-    $section = self::createElement(Node::section, $content);
+    $section = self::createElement(Node::section, $content, false, $namespace);
     self::setAttributes($section, $attributes, $allowed_attributes);
 
     return $section;

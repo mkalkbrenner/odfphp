@@ -45,13 +45,16 @@ class Style extends Shortcut
    *
    * @param mixed $content
    * @param array $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createMasterStyleHeader($content = NULL, $attributes = []) {
+  public static function createMasterStyleHeader($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [];
 
-    $style = self::createElement(Node::style_header, $content);
+    $style = self::createElement(Node::style_header, $content, false, $namespace);
     self::setAttributes($style, $attributes, $allowed_attributes);
 
     return $style;
@@ -62,10 +65,13 @@ class Style extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createStyle($content = NULL, $attributes = [])
+  public static function createStyle($content = NULL, $attributes = [], $namespace = null)
   {
     static $allowed_attributes = [
       'style:auto-update',
@@ -83,7 +89,7 @@ class Style extends Shortcut
       'style:percentage-data-style-name',
     ];
 
-    $style = self::createElement(Node::style, $content);
+    $style = self::createElement(Node::style, $content, false, $namespace);
     self::setAttributes($style, $attributes, $allowed_attributes);
 
     return $style;
@@ -94,10 +100,13 @@ class Style extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createParagraphProperties($content = NULL, $attributes = []) {
+  public static function createParagraphProperties($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       'fo:background-color',
       'fo:border',
@@ -154,7 +163,7 @@ class Style extends Shortcut
       'text:number-lines'
     ];
 
-    $props = self::createElement(Node::paragraph_properties, $content);
+    $props = self::createElement(Node::paragraph_properties, $content, false, $namespace);
     self::setAttributes($props, $attributes, $allowed_attributes);
 
     return $props;
@@ -165,10 +174,13 @@ class Style extends Shortcut
    *
    * @param mixed $content
    * @param string[] $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createTextProperties($content = NULL, $attributes = []) {
+  public static function createTextProperties($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       'fo:background-color',
       'fo:color',
@@ -256,7 +268,7 @@ class Style extends Shortcut
       'text:display',
     ];
 
-    $props = self::createElement(Node::text_properties, $content);
+    $props = self::createElement(Node::text_properties, $content, false, $namespace);
     self::setAttributes($props, $attributes, $allowed_attributes);
 
     return $props;
@@ -267,10 +279,13 @@ class Style extends Shortcut
    *
    * @param mixed $content
    * @param array $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createGlobalGraphicProperties($content = NULL, $attributes = []) {
+  public static function createGlobalGraphicProperties($content = NULL, $attributes = [], $namespace = null) {
     static $allowed_attributes = [
       'text:anchor-type',
       'svg:x',
@@ -297,7 +312,7 @@ class Style extends Shortcut
       'style:horizontal-rel'            => 'paragraph'
     ];
 
-    $props = self::createElement(Node::graphic_properties, $content);
+    $props = self::createElement(Node::graphic_properties, $content, false, $namespace);
     self::setAttributes($props, $attributes, $allowed_attributes);
 
     return $props;
@@ -308,10 +323,13 @@ class Style extends Shortcut
    *
    * @param mixed $content
    * @param array $attributes
+   * @param string|null $namespace
    *
    * @return \DOMElement
+   *
+   * @throws \Exception
    */
-  public static function createGraphicProperties($content = NULL, $attributes = [])
+  public static function createGraphicProperties($content = NULL, $attributes = [], $namespace = null)
   {
     static $allowed_attributes = [
       'style:vertical-pos',
@@ -360,7 +378,7 @@ class Style extends Shortcut
       'draw:color-mode'                 => 'standard'
     ];
 
-    $props = self::createElement(Node::graphic_properties, $content);
+    $props = self::createElement(Node::graphic_properties, $content, false, $namespace);
     self::setAttributes($props, $attributes, $allowed_attributes);
 
     return $props;
